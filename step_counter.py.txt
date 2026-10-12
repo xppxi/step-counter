@@ -1,0 +1,439 @@
+متابعة من كود عداد الخطوات
+
+تمام! 🔥 اخترت التصميم A — رياضي احترافي بالأسود والأزرق مع أيقونة حذاء رياضي. 👟💙
+
+باقي تحدد لي شيئين:
+
+1. اسم البرنامج: وش تبي نسميه؟ مثلاً Step Master أو عداد الأبطال.
+
+2. اسم المطوّر: وش الاسم أو اللقب اللي تبي يظهر داخل البرنامج؟ تقدر تكتب لقبًا بدل اسمك الحقيقي.
+
+اكتب لي الاسمين، وبنجهّز النسخة الجديدة على ذوقك! 🚀
+
+عداد الخطوات
+
+اختيار جميل! 👟💙 اسم البرنامج بيكون عداد الخطوات، بتصميم رياضي احترافي بالأسود والأزرق.
+
+باقي شيء واحد فقط:
+
+وش الاسم اللي تبي يظهر كمطوّر البرنامج؟ 🧑‍💻
+
+مثلاً:
+
+مطوّر بواسطة: محمد
+Developed by: Step Master
+أو أي لقب تختاره.
+
+اكتب الاسم أو اللقب، ونكمل! 🚀
+
+developed by Ali
+
+تمام يا بطل! 🔥👟 بنعتمد هذي الهوية لبرنامجك:
+
+اسم البرنامج: عداد الخطوات
+اسم المطوّر: Developed by Ali
+التصميم: رياضي احترافي بالأسود والأزرق
+الشعار: 👟 حذاء رياضي
+الهدف اليومي الافتراضي: 10,000 خطوة
+
+باقي بنخلي التصميم يشمل عدادًا واضحًا، وشريط تقدم، وأزرار إضافة وحذف الخطوات، وتغيير الهدف وتصفير العداد.
+
+الخطوة التالية: أقدر أجهز لك الكود كاملًا بالتصميم الجديد، بحيث تستبدل الكود القديم به ثم تحوّله إلى برنامج EXE مثل ما شرحنا.
+
+تبيني أجهز لك الكود كاملًا الآن؟
+
+اي
+import tkinter as tk
+from tkinter import messagebox
+import json
+import os
+from datetime import date
+
+APP_NAME = "عداد الخطوات"
+DATA_FILE = "steps_data.json"
+DEFAULT_GOAL = 10000
+
+BG = "#0B1120"
+CARD = "#151F32"
+BLUE = "#2589FF"
+LIGHT_BLUE = "#65B5FF"
+WHITE = "#FFFFFF"
+GRAY = "#A6B4C8"
+GREEN = "#27D980"
+RED = "#F05252"
+
+
+class StepCounterApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("عداد الخطوات | Developed by Ali")
+        self.root.geometry("520x700")
+        self.root.resizable(False, False)
+        self.root.configure(bg=BG)
+
+        self.today = date.today().isoformat()
+        self.steps = 0
+        self.goal = DEFAULT_GOAL
+
+        self.load_data()
+        self.build_interface()
+        self.update_interface()
+
+        self.root.protocol("WM_DELETE_WINDOW", self.on_close)
+
+    def load_data(self):
+        if not os.path.exists(DATA_FILE):
+            return
+
+        try:
+            with open(DATA_FILE, "r", encoding="utf-8") as file:
+                data = json.load(file)
+
+            if data.get("date") == self.today:
+                self.steps = max(0, int(data.get("steps", 0)))
+
+            self.goal = max(1, int(data.get("goal", DEFAULT_GOAL)))
+
+        except (json.JSONDecodeError, ValueError, TypeError, OSError):
+            self.steps = 0
+            self.goal = DEFAULT_GOAL
+
+    def save_data(self):
+        data = {
+            "date": self.today,
+            "steps": self.steps,
+            "goal": self.goal
+        }
+
+        try:
+            with open(DATA_FILE, "w", encoding="utf-8") as file:
+                json.dump(data, file, ensure_ascii=False, indent=4)
+        except OSError:
+            messagebox.showerror("خطأ", "تعذر حفظ البيانات.")
+
+    def build_interface(self):
+        header = tk.Frame(self.root, bg=BG)
+        header.pack(fill="x", pady=(20, 10))
+
+        tk.Label(
+            header,
+            text="👟",
+            font=("Segoe UI Emoji", 35),
+            bg=BG,
+            fg=BLUE
+        ).pack()
+
+        tk.Label(
+            header,
+            text="عداد الخطوات",
+            font=("Arial", 25, "bold"),
+            bg=BG,
+            fg=WHITE
+        ).pack()
+
+        tk.Label(
+            header,
+            text="STEP COUNTER",
+            font=("Arial", 10, "bold"),
+            bg=BG,
+            fg=LIGHT_BLUE
+        ).pack(pady=3)
+
+        card = tk.Frame(
+            self.root,
+            bg=CARD,
+            highlightbackground="#263A58",
+            highlightthickness=1
+        )
+        card.pack(fill="x", padx=25, pady=10)
+
+        tk.Label(
+            card,
+            text="خطواتك اليوم",
+            font=("Arial", 14),
+            bg=CARD,
+            fg=GRAY
+        ).pack(pady=(20, 5))
+
+        self.steps_label = tk.Label(
+            card,
+            text="0",
+            font=("Arial", 48, "bold"),
+            bg=CARD,
+            fg=BLUE
+        )
+        self.steps_label.pack(pady=2)
+
+        self.goal_label = tk.Label(
+            card,
+            text="الهدف: 10,000 خطوة",
+            font=("Arial", 12),
+            bg=CARD,
+            fg=WHITE
+        )
+        self.goal_label.pack(pady=5)
+
+        self.progress = tk.Canvas(
+            card,
+            width=420,
+            height=24,
+            bg=CARD,
+            highlightthickness=0
+        )
+        self.progress.pack(pady=(15, 5))
+
+        self.percent_label = tk.Label(
+            card,
+            text="0% من الهدف",
+            font=("Arial", 11, "bold"),
+            bg=CARD,
+            fg=LIGHT_BLUE
+        )
+        self.percent_label.pack(pady=(5, 15))
+
+        input_frame = tk.Frame(self.root, bg=BG)
+        input_frame.pack(pady=15)
+
+        tk.Label(
+            input_frame,
+            text="أدخل عدد الخطوات",
+            font=("Arial", 12, "bold"),
+            bg=BG,
+            fg=WHITE
+        ).pack(pady=(0, 8))
+
+        self.steps_entry = tk.Entry(
+            input_frame,
+            font=("Arial", 16),
+            width=18,
+            justify="center",
+            bg="#202D43",
+            fg=WHITE,
+            insertbackground=WHITE,
+            relief="flat"
+        )
+        self.steps_entry.pack(ipady=8)
+        self.steps_entry.insert(0, "100")
+
+        buttons = tk.Frame(self.root, bg=BG)
+        buttons.pack(pady=5)
+
+        self.create_button(
+            buttons, "＋ إضافة خطوات",
+            self.add_steps, GREEN, 0, 0
+        )
+
+        self.create_button(
+            buttons, "－ حذف خطوات",
+            self.remove_steps, RED, 0, 1
+        )
+
+        self.create_button(
+            buttons, "🎯 تغيير الهدف",
+            self.change_goal, BLUE, 1, 0
+        )
+
+        self.create_button(
+            buttons, "↻ تصفير العداد",
+            self.reset_steps, "#59657A", 1, 1
+        )
+
+        self.status_label = tk.Label(
+            self.root,
+            text="ابدأ رحلتك نحو هدفك!",
+            font=("Arial", 12, "bold"),
+            bg=BG,
+            fg=GREEN
+        )
+        self.status_label.pack(pady=15)
+
+        tk.Label(
+            self.root,
+            text=f"التاريخ: {self.today}",
+            font=("Arial", 9),
+            bg=BG,
+            fg=GRAY
+        ).pack(pady=2)
+
+        tk.Label(
+            self.root,
+            text="Developed by Ali",
+            font=("Arial", 10, "bold"),
+            bg=BG,
+            fg=LIGHT_BLUE
+        ).pack(side="bottom", pady=15)
+
+    def create_button(self, parent, text, command, color, row, column):
+        button = tk.Button(
+            parent,
+            text=text,
+            command=command,
+            font=("Arial", 11, "bold"),
+            bg=color,
+            fg=WHITE,
+            activebackground=color,
+            activeforeground=WHITE,
+            relief="flat",
+            width=19,
+            height=2,
+            cursor="hand2",
+            borderwidth=0
+        )
+        button.grid(row=row, column=column, padx=7, pady=7)
+
+    def get_input_number(self):
+        try:
+            number = int(self.steps_entry.get().strip())
+
+            if not 1 <= number <= 1000000:
+                raise ValueError
+
+            return number
+
+        except ValueError:
+            messagebox.showwarning(
+                "قيمة غير صحيحة",
+                "أدخل عددًا صحيحًا بين 1 و1,000,000."
+            )
+            return None
+
+    def add_steps(self):
+        number = self.get_input_number()
+
+        if number is None:
+            return
+
+        self.steps += number
+        self.save_data()
+        self.update_interface()
+
+    def remove_steps(self):
+        number = self.get_input_number()
+
+        if number is None:
+            return
+
+        self.steps = max(0, self.steps - number)
+        self.save_data()
+        self.update_interface()
+
+    def change_goal(self):
+        dialog = tk.Toplevel(self.root)
+        dialog.title("تغيير الهدف")
+        dialog.geometry("320x200")
+        dialog.resizable(False, False)
+        dialog.configure(bg=CARD)
+        dialog.transient(self.root)
+        dialog.grab_set()
+
+        tk.Label(
+            dialog,
+            text="أدخل هدفك اليومي الجديد",
+            font=("Arial", 12, "bold"),
+            bg=CARD,
+            fg=WHITE
+        ).pack(pady=(25, 12))
+
+        entry = tk.Entry(
+            dialog,
+            font=("Arial", 15),
+            justify="center"
+        )
+        entry.pack()
+        entry.insert(0, str(self.goal))
+        entry.focus_set()
+
+        def save_goal():
+            try:
+                goal = int(entry.get().strip())
+
+                if not 1 <= goal <= 1000000:
+                    raise ValueError
+
+                self.goal = goal
+                self.save_data()
+                self.update_interface()
+                dialog.destroy()
+
+            except ValueError:
+                messagebox.showwarning(
+                    "تنبيه",
+                    "أدخل هدفًا بين 1 و1,000,000.",
+                    parent=dialog
+                )
+
+        tk.Button(
+            dialog,
+            text="حفظ الهدف",
+            command=save_goal,
+            font=("Arial", 11, "bold"),
+            bg=BLUE,
+            fg=WHITE,
+            relief="flat",
+            padx=25,
+            pady=6
+        ).pack(pady=18)
+
+    def reset_steps(self):
+        if messagebox.askyesno(
+            "تأكيد",
+            "هل تريد تصفير خطوات اليوم؟"
+        ):
+            self.steps = 0
+            self.save_data()
+            self.update_interface()
+
+    def update_interface(self):
+        self.steps_label.config(text=f"{self.steps:,}")
+        self.goal_label.config(text=f"الهدف: {self.goal:,} خطوة")
+
+        percentage = self.steps / self.goal * 100
+
+        self.progress.delete("all")
+
+        width = 420
+        height = 16
+
+        self.progress.create_rectangle(
+            0, 3, width, height,
+            fill="#29374D",
+            outline=""
+        )
+
+        filled = min(width, int(width * percentage / 100))
+
+        if filled > 0:
+            self.progress.create_rectangle(
+                0, 3, filled, height,
+                fill=BLUE,
+                outline=""
+            )
+
+        self.percent_label.config(
+            text=f"{percentage:.1f}% من الهدف"
+        )
+
+        if self.steps >= self.goal:
+            text = "🏆 رائع! حققت هدفك اليومي!"
+            color = GREEN
+        elif self.steps >= self.goal * 0.75:
+            text = "🔥 أنت قريب من تحقيق هدفك!"
+            color = LIGHT_BLUE
+        elif self.steps > 0:
+            text = "💪 استمر، كل خطوة مهمة!"
+            color = GREEN
+        else:
+            text = "ابدأ رحلتك نحو هدفك!"
+            color = GRAY
+
+        self.status_label.config(text=text, fg=color)
+
+    def on_close(self):
+        self.save_data()
+        self.root.destroy()
+
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = StepCounterApp(root)
+    root.mainloop()
